@@ -26,6 +26,10 @@
 \definecolor{cadetgrey}{rgb}{0.57, 0.64, 0.69}      % Dark Color
 \definecolor{gainsboro}{rgb}{0.86, 0.86, 0.86}      % Light Color
 
+%% Remove indentation
+\setlength{\parindent}{0pt}
+%%%%%%%
+
 \begin{document}
 
 %% FRONT PAGE
@@ -130,7 +134,8 @@ No-load Current & $i_0$ \\
 Voltage & $u$ \\\rowcolor{gainsboro}
 Mass & $m$ \\
 Lift Constant & $k$\\\rowcolor{gainsboro}
-\end{tabular}                                                     \end{center}
+\end{tabular}
+\end{center}
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,19 +150,23 @@ Lift Constant & $k$\\\rowcolor{gainsboro}
 \subfile{Sections/1Introduction}
 \newpage
 
-\subfile{Sections/2MathematicalModel}
+\subfile{Sections/2ExistingTechnology}
 \newpage
 
-\subfile{Sections/3FlightController}
+\subfile{Sections/3MathematicalModel}
 \newpage
 
-\subfile{Sections/5MechDesign}
+\subfile{Sections/4FlightController}
 \newpage
 
-\subfile{Sections/4ElectricalDesign}
+\subfile{Sections/6MechDesign}
 \newpage
 
+\subfile{Sections/5ElectricalDesign}
+\newpage
 
+\subfile{Sections/7vibrations}
+\newpage
 
 
 % References

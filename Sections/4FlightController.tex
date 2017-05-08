@@ -1,13 +1,13 @@
 \section{Flight Controller}
 
 \subsection{Initial Plan and Concept Changes}
-The main objective of this bachelor thesis is to build a small variable pitch quadrotor, which will be used to measure the response time and compare it with a fixed pitch quadrotor to determine the effects it has on stability. The plan was initially to change the Pixhawk flight controller, to get it to work with radio control and the Pixhawk autopilot. However, integrating Pixhawk autopilot is not trivial, especially to get it to work with the variable pitch quadrotor. It requires a significant change of a quite large flight controller, consisting of hundreds of thousands of lines of code. 
+The main objective of this bachelor thesis is to build a small variable pitch quadrotor, which will be used to measure the response time and compare it with a fixed pitch quadrotor to determine the effects it has on stability.The plan was initially to change the Pixhawk flight controller, to get it to work with radio control and the Pixhawk autopilot. The pixhawk software requires a significant change of a quite large flight controller, consisting of hundreds of thousands of lines of code. Because of this we assumed it would be easier to create our own flight controller or modify a smaller flight controller. 
 \\\\
 The approach was altered early, after a discussion with FFI, based upon all of the changes that would have to be made in the flight controller. Not to speak of all the hours needed to understand the flight controller at a decent level. 
 \\\\
 With access to Kongsberg Innovation Center, containing a high motion capture system (Qualisys), the team decided to build a flight controller from scratch. The plan was to use the Qualisys system to track the quadrotor and give data about its position. Using the high motion capture system also gave us the possibility to make the quadrotor autonomous. The disadvantage with this choice is the limitation with access to the lab under development. This also forces any further use to be at a facility containing Qualisys or a similar high motion capture system. This means that for FFI to be able to use this system, they would need a high motion capture system. Even with these two major disadvantages in consideration the team decided that it was worth using this facility to get accurate and repeatable data.  
 \\\\
-The initial thoughts was to use an external computer connected to the high motion capture camera as a flight controller.\\
+The initial thoughts was to use an external computer connected to the motion capture camera as a flight controller.\\
 \begin{figure}[H]
           \centering
             \includegraphics[scale = 0.6]{VAPIQ-PICTURES/ConceptOfOperation.jpg}
@@ -17,7 +17,7 @@ The initial thoughts was to use an external computer connected to the high motio
 \end{figure} 
 \newpage
 \noindent 
-In this concept the plan was to use the information received from QTM to do calculations on an external computer. The initial assumption was that this would give an advantage when writing our own flight controller software. Advantages with computing externally are increased computational power and less hardware such as sensors on the quadcopter. 
+In this original concept the plan was to use the information received from QTM to do calculations on an external computer. The initial assumption was that this would give an advantage when writing our own flight controller software. Advantages with computing externally are increased computational power and less hardware such as sensors on the quadcopter. 
 \\\\
 QTM provides six different values (x, y, z, $ \phi, $ $ \theta ,$ $ \psi $). The goal is to keep the quadrotor stable and agile in air. The plan was taking the information provided about its position and rotation and compute algorithms to determine roll, pitch, yaw, and thrust change for each motor. The computed data would then be sent back to the quadrotor wirelessly with simple motor and servo signals for it to execute. This was supposed to run in a loop and update at a rate of minimum 50Hz. Getting an update every 20ms. The external PC would need to gather information, compute and send it back to the quadcopter. \\
 \\
@@ -57,18 +57,18 @@ In this concept Qualisys could be moved and a radio controller could be used ins
 
 \noindent The fourth concept is to go back to the original plan to modify a Pixhawk. Qualisys can be used as an observer and run the system with a radio controller. This is probably the easiest option to get a flying variable pitch quadrotor helicopter. In theory it should be possible to achieve variable pitch flight by changing the thrust relative to the pitch, and change the thrust input with the propeller pitch. Nevertheless we would have the same problem as in concept 2, where it would be difficult to get valuable scientific data. The other option is to integrate the Pixhawk flight controller with the Qualisys system. 
 \\\\
-The current assumption is that implementing Qualisys into the Pixhawk autopilot and changing the required part in the code would take a substantial amount of time. A possible solution would be to modify it to work with radio controller and then expand it to get signals from a computer in order for it to work autonomously. Radio control can be desired because of the implementation time is likely to be shorter.
+Our assumption is that implementing Qualisys into the Pixhawk autopilot and changing the required part in the code would take a substantial amount of time. A possible solution would be to modify it to work with radio controller and then expand it to get signals from a computer in order for it to work autonomously. Radio control can be desired because of the implementation time is likely to be shorter.
 
-\subsubsection{Current Concept \& Analysis}
+\subsubsection{Second Concept \& Analysis}
 The original concept was very promising in the way it would give us accurate scientific data, needing less hardware on the quadrotor, and more computation power. This concept has one disadvantage related to the latency in the overall system. The quadrotor needs to correct for changes quick and a too high latency limits the system. To correct for this the concepts was created, each providing their advantages and disadvantages. 
 \\\\
-Both concept two (Fig. \ref{Con1}) and three (Fig. \ref{Con2}) removes this latency by adding an IMU that can sample at 1kHz for the accelerometer data and 8kHz for the gyro data. This gives us an update frequency of 50Hz, compared to 12.5Hz by using Qualisys, given 20 samples to filter vibrations and spikes. However this requires more hardware on the quadrotor making the quadrotor heavier. For the concept with the on-board and off-board flight controller, see Fig. \ref{Con1}, it involves more communication between the systems. The deciding factor, in our case, between these two concepts is that the user will have more control over the quadrotor. For the 50/50 concept the user can send signals to python in real-time, to change its trajectory. This is harder to do with the quadrotor flight controller. Normally this would be controlled with a radio controller and not a pre-programmed route. 
+Both concept two Fig. \ref{Con1} and three Fig. \ref{Con2} removes this latency by adding an IMU that can sample at 1kHz for the accelerometer data and 8kHz for the gyro data. This gives us an update frequency of 50Hz, compared to 12.5Hz by using Qualisys, given 20 samples to filter vibrations and spikes. However this requires more hardware on the quadrotor making the quadrotor heavier. For the concept with the on-board and off-board flight controller, see Fig. \ref{Con1}, it involves more communication between the systems. The deciding factor, in our case, between these two concepts is that the user will have more control over the quadrotor. For the 50/50 concept the user can send signals to python in real-time, to change its trajectory. This is harder to do with the quadrotor flight controller. Normally this would be controlled with a radio controller and not a pre-programmed route. 
 \\\\
 The two remaining concepts, see Fig. \ref{Con1} \& Fig. \ref{Con3}, is making a 50/50 version or modifying the pixhawk. This was for us a difficult choice, considering our knowledge gaps in both these areas. It is possible to modify the pixhawk code, an already existing flight controller. Which is optimized for fixed pitch quadrotors. The pixhawk however is quite large and could be harder to modify and integrate with the motion caption system. On the other side it would be easier to integrate the motion caption system in a self-developed code. The problem is that the self-developed code would not be optimized for neither fixed nor variable pitch. The time it takes to optimized is also quite long.
 \\\\
 After taking these advantages and disadvantages from each concept and analysing them, the team came to the conclusion that going for concept two was the best for our case, see Fig. \ref{Con1}. 
 
-\subsection{On Board}
+\subsection{On Board, second concept}
 The on-board flight controller mainly consist of the inner control loop. This is the loop that helps the quadrotor keep steady. Its only objective is to achieve  stabilisation of the quadcopter in a given rotation provided by the external system. It uses multiple libraries like Servo.h for sending and SoftwareSerial.h for communication. It expects to receive the angles the quadcopter should keep to get to a given position, or to stay at it is current. It also expects to receive the amount of thrust it needs to stay at the same altitude. 
 
 \subsubsection{Calibration, Arming and Sensor Readings}
@@ -128,17 +128,129 @@ If the differential thrust is negative, motor 3 will increase and motor 1 will d
 \\\\
 This type of controller is a proportional-integral-derivative controller (PID controller). Although a P controller is implemented at this moment, but a PD controller will be added in the future versions of the controller. This controller uses feedback to calculate an error between a desired setpoint and the actual variable measured by a sensor. In this case a angle and the angular velocity measured by the IMU.
 
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%    Radio Controller   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Flight Controller With Radio Controller}
+
+The final flight controller used in this project is based on Joop Brokkings \textbf{YMFC 3D - Your Multicopter Flight Controller}. \cite{joop}. This software has served as a foundation for the development of the variable pitch flight controller. The flight controller is as simple as possible and supports radio control. To ensure reliable data, the radio controller will be replaced by autonomous control using the motion capture system Qualisys at KIC.
+
+%%%% Comments %%%%%%%%%%%%% 
+\begin{comment}
+Declerations:
+The YMFC flight controller consist of the wire library used for communication with the gyro, eeprom library to store information in eeprom and servo library to control the variable pitch mechanisms. 
+PID variables are created, PID variables both for pitch, roll and yaw, also their limit values. 
+Counter for channel 1-4 and loop esc to motors are set. 
+Servo 1-4 to servoes are defined. 
+The code also has some battery voltage correction functionality, which we don't use (maybe we should?)
+
+Setup:
+1. Read from EEPROM
+2. Set gyro register
+3. Calibrate gyro, takes 2k samples and finds the offset of the sensor. 
+4. Wait for radio frequency signal (or bluetooth for autonomous system)
+5. Define outputs and inputs
+6. Calibrate servos
+7. Write start values to servos
+
+Loop:
+1. Read RF or bluetooth signal 
+2. Read gyro, pass through complementary filter (will add more software implementations here)
+3. Check for Stop or Start signal on RF (or bluetooth)
+4. If start signal, reset PID error corrections
+5. Setpoint check
+6. Calculate PID
+7. Compensate for low-battery
+-----------------------------------------------------
+Control loop:
+8.1 Regulate motor values 
+8.2 Limit throttle to 80\% if above
+8.3 Calculate pulse (add formula?)
+8.4 Check if battery is connected
+8.5 Map servo based upon thrust to a predefined scope
+8.6 Send servo values to servo
+8.7 Print debug information if in debug mode
+8.8 Limit throttle to 20\% if below
+-----------------------------------------------------
+If loop not active:
+9. Send min values to motor and start values to servo
+10. Set refresh rate to 250Hz
+11. Calculate falling edge of channel 4-7
+12. Wait for falling edge
+
+All other functions:
+- Routine for channels 8-11, timer change
+- UpdateGyro
+- CalculatePID
+- PWM function
+- SetGyroRegister
+- Calibrate servos
+
+\end{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsubsection{The Flight Controller}
+The flight controller software consists of four Arduino sketches which are uploaded separately. A short description of each of them will follow.\\
+
+\textbf{Setup}\\
+This is the first part, and is uploaded to the Arduino without the battery connected. When the sketch is uploaded a setup procedure is initiated. This guides the user through a series of instructions to calibrate the quadcopter. The first step in setup is to calibrate the radio controller, where the center values of the sticks are stored.
+When the controller is calibrated, the setup will search for a IMU and start calibration of the gyro. The software stores the direction of the axis for roll, pitch and yaw. After everything is done, the stored values are written to the EEPROM to ensure that the other sketches can utilize the same configuration. \\ 
+
+\textbf{ESC Calibration}\\
+This sketch ensures that all of the ESCs are calibrated and that the motors starts at the same speed when activated. This part also contains a function that can help the user to check if everything on the quadcopter is working properly. When the battery is connected, the user may spin one motor after the other to ensure correct rotational direction of each motor.  \\
+
+\textbf{Servo Calibration}\\
+To achieve stable flight, the pitch on all propellers must be mechanical zero-pitch. In servo calibration, each servo is manually set to zero-pitch by communication over the serial monitor. When the values corresponding to zero-pitch are found, they are stored and used as zero-reference in the main controller. \\
+
+\textbf{Flight Controller}\\
+This is the main sketch and contains the actual flight controller software. The sketch reads the EEPROM and collects the data stored under setup to get the correct configuration of the quadcopter. Before the quadcopter is ready to fly, the IMU takes 2000 samples to calibrate the sensor and to calculate the average gyro offset. The quadcopter starts when the throttle stick is placed in the lower left corner and stops when the throttle stick is placed in the lower right corner. \\
+
+When the quadcopter is started, the motors will start spinning at minimum speed until more throttle is received from the radio controller. The receiver input signals operates on interrupts, this means that when a change is made to the radio controller all other programs running are paused to interpret the controller inputs.
+\\
+To take full advantage of variable pitch, the motors are running at a higher starting RPM than on a regular fixed pitch quadcopter. This is to ensure that as much kinetic energy as possible is stored in the rotating parts. In this way, pitch actuation will be able to unleash the kinetic energy resulting in high acceleration rates. The signals controlling the servos are values mapped from the ESC-values which have already been treated by the PID algorithm.\\
+
+Additionally, a debug function has been implemented. This function helps to detect errors in the controller if enabled.
+
+\subsubsection{Details}
+The flight controller software utilizes the Wire.h library in Arduino and communicates with the IMU on fast I2C running at 400kHz. The Servo.h library is used for controlling the servos. This is a standard Arduino library, but has been changed to have higher refresh rates. The loop is running 250Hz, therefore the servos refresh rate is also set to 250Hz in the library.The servos used for this project are digital and capable of rates up to 333Hz. \\
+
+The main loop of the flight controller runs at 250Hz update frequency, the gyroscope can be sampled with a refresh rate of 8kHz. The increased sample rate of the gyro gives the possibility of filtering the gyro date without slowing down the main loop. 32 samples of the gyro may be taken and processed by a running average filter. The accelerometer of the MPU6050, can be sampled with a frequency of 1kHz. The filtered values of the gyro and accelerometer are used in the PID calculation to make corrections in the quadcopters trajectory. \\ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\clearpage   %% Starts new page
+
+
+
 \subsection{Communication}
-A HC-06 bluetooth device are used in this project, which are connected to the on-board arduino. Using a Xbee wi-fi module was considered, but we ended up on the conclusion that the bluetooth device would be sufficient. It is used as a slave and needs to be connected from the computer with a physical address. The software serial library helps when connecting to both the serial and bluetooth cable at the same time. Information is sent by using a string that contains the angles and thrust. The string gets interpreted when it reaches the arduino and is casted to integer.
+
+We are using two ways to communicate with the quadrotor. It can be done by either bluetooth or RF signals from a radio controller. Only one of the devices are used at once. The radio controller is selected when the pilot wants to fly the quadcopter by himself, and the bluetooth device is used for autonomous flight.\\
+\\
+A HC-06 bluetooth device are used in this project, which are connected to the on-board arduino. An Xbee wi-fi module was considered, but we ended up on the conclusion that the bluetooth device would be sufficient. The bluetooth device is used as a slave and needs to be connected from the computer with a physical address. The software serial library helps when connecting to both the serial and bluetooth cable at the same time. Information is sent by using a string that contains the angles and thrust. The string gets interpreted when it reaches the arduino and is casted to integer.
 \\\\
 The external computer can get information from Qualisys by calling some software functions. First calling the qt.setup() function to setup the connection, and then call on qt.getAttitude() to get the position and rotation. We've however struggled some on getting the most recent information. Further testing is required. 
 
 \subsection{Off Board}
-The off board flight controller deals with the information provided from Qualisys and finding the path. It can decide the pitch and roll angle to the quadrotor. The quadrotor on-board code then works to keep it stable with the given pitch and roll. It also controls the thrust. Making sure the quadrotor is in the right altitude, and correcting for errors. 
-\\\\
-The main goal with the off-board controller is to decide the path of the quadrotor in flight, and provide it with information required. 
+The off board flight controller deals with the information provided from Qualisys and finding the path. It is written in python, and can decide the pitch and roll angle to the quadrotor. The quadrotor on-board code then works to keep it stable with the given pitch and roll. It also controls the thrust. Making sure the quadrotor is in the right altitude, and correcting for errors. \\
+\\
+The quadcopter logs all information with the logging function in python and gives debug, warning and critical messages. \\
+Position and rotation of the quadrotor is logged by qualisys and gives the first information registered. We are using threading to keep a separate function constantly running updating this information to the most recent. This way we always have the current position and rotation available. \\
+\\
+The main goal with the off-board controller is to decide the path of the quadrotor in flight, and provide it with information required. \\
 \subsubsection{Establishing Connection}
 The off-board code first tries to establish connection with Qualisys. If no contact is achieved it will not start. When contact is achieved it will send a start signal to the quadrotor, which in return will send a signal back when the motors are armed. When both contact with Qualisys and the quadrotor is achieved the program will start computing. \\
+\subsubsection{Adaptation to radio controller software}
+There was certain changes needed when we changed the software on the quadcopter. From the on-board concept to the radio controller flight controller. The autonomous system was not designed to work together with this new radio controller. The change in on-board software was needed to speed up the development time. This is to faster get results, with a radio controller and start testing as soon as possible. The results need to be tested several times but the radio control system was not designed to work with the off-board flight controller. \\
+\\
+The off-board needs to send bluetooth signals equaling what the RF controller would send in order to control the quadrotor. The other option would be to change the radio controller software to expect to receive the signals of the previous system. The former method was selected, changing the off-board. \\
+\\
+The starting process is mostly left unchanged, needing a two-way handshake to start. The signals sent to the quadcopter so far have been the rotation and thrust we want it to move at. This does not work with the new radio control system. We need to measure the rotation of the quadrotor and find the desired pitch, roll and yaw force needed to hold the desired rotation. 
+
+\subsubsection{Safety mechanisms}
+Multiple safety mechanisms have been implemented to ensure safety of both the quadrotor and the facility. The quadrotor have a certain area that it can fly in.  If the quadrotor moves out of this scope in either x or y axes it will initiate the landing process and propellers will be stopped quickly. If it is close to crash in either the roof or the ground the propellers will be stopped instantly. This is not to do damage to the roof and equipment. When close to hitting the ground the propellers will stop in order to do no more damage than necessary to the propellers by having them spinning into the ground. The software constantly checks if it is within this scope or if it has lost connection with the motion capture camera. 
 \subsubsection{Off-Board Control System}
 The off-board control system computes the angles and desired position, and sends this information to the quadrotor. The quadrotor start by storing the start position and the current time. \\
 The external computer then gets the new position and rotation of the quadrotor. If no data is received a counter is increased, and the last position and rotation measured is the current. If this happens five times the quadrotor will stabilize and land. If the contact is received the counter resets. \\
@@ -277,6 +389,8 @@ Vibrations has been a challenge. It is messing up the sensor data a lot, the res
 \\\\
 Some communication challenges was encountered in the beginning of the project. It was difficult to get bluetooth connection to work properly. This was because of multiple broken bluetooth modules. The information from Qualisys was also harder to retrieve than first expected, and we're currently working on getting the most recent information. It seems all the information is stored in a FIFO counter. The information provided seems to be the next in line when requesting with Qualisys software. This was fixed by adding multithreading to the off-board code. Making the threads handle the information provided by reading and updating. Another thread was used for handling the computation and communication with the quadrotor. Another more optimal solution could be to change some of the Qualisys software to add the information in a LIFO queue.
 
+
+
 \subsubsection{Risks with Qualisys}
 There are some risks associated with committing to using this system, such as risks regarding equipment, availability and latency in the communication. It would be a pretty big loss if we where to lose access to this system. 
 \\\\
@@ -285,6 +399,7 @@ Another risk is in regards to the Qualisys system. It might limit us because of 
 A third risk with using this system is the latency between the subsystems. Regardless of whether we use the external pc or not, tracking the position and rotation might increase the response time. Especially when compared to detecting this on the quadcopter itself. Finding out the response time and whether or not this system have a low enough latency to be used with a quadcopter need to be figured out. The sooner the better. 
 \\\\
 Another risk with the system is the precision of the system. The system we need to track the quadcopter with needs to be quick and it needs to be precise. Small biases and errors could lead to problems in the computation. The system needs a heavy regulation. In critical phases if the latency is too high, it will limit how agile the quadcopter can be. Qualisys needs to be able to detect and track the small reflective spheres. To be able to do this they have to be visible for the cameras in flight. Autonomous control is another challenge in this project. Getting it to work optimal with all the different systems is time consuming. 
+
 
 \subsection{Further Work}
 We have gained experience from working with code for several test-riggs, such as stabilisation of one arm propeller, stabilisation in one axis, stabilisation in two axes, thrust measurement and pitch measurement. \\
